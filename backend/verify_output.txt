@@ -1,0 +1,12 @@
+
+--- Testing Dashboard Summary ---
+Success!
+Stats: {'recommended': 34, 'saved': 0, 'applied': 0, 'not_interested': 0}
+Profile: {'skills_count': 0, 'experience_years': 0, 'profile_completion': 20}
+Recent Activity: 0 saved, 0 applied
+
+--- Testing Skill Analytics ---
+Success!
+Top User Skills: []
+Missing Skills: ['Go', 'AI', 'Java', 'Spring', 'SQL', 'Git', 'AWS', 'Python', 'Docker', 'Kubernetes']
+Recommended Skills (Top 3): [{'skill': 'Go', 'frequency': 21}, {'skill': 'AI', 'frequency': 21}, {'skill': 'Java', 'frequency': 20}]
