@@ -1,0 +1,40 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+    const token = request.cookies.get('token')?.value;
+    const { pathname } = request.nextUrl;
+
+    // Public routes that don't require auth
+    const publicRoutes = ['/', '/login', '/register'];
+
+    // Check if the current path is a protected route
+    // Protected routes are anything NOT in publicRoutes (and not static files)
+    const isPublicRoute = publicRoutes.includes(pathname);
+    const isStaticAsset = pathname.startsWith('/_next') || pathname.includes('.');
+
+    if (isStaticAsset) {
+        return NextResponse.next();
+    }
+
+    // Redirect to login if accessing protected route without token
+    if (!isPublicRoute && !token) {
+        const loginUrl = new URL('/login', request.url);
+        return NextResponse.redirect(loginUrl);
+    }
+
+    // Redirect to dashboard if accessing public route (like login) WITH token
+    if (isPublicRoute && token && pathname !== '/') {
+        // Allow '/' to be visited even if logged in, or redirect? 
+        // User requirement: "After login → redirect to /dashboard"
+        // Usually if I'm logged in and go to /login, I should be sent to dashboard.
+        const dashboardUrl = new URL('/dashboard', request.url);
+        return NextResponse.redirect(dashboardUrl);
+    }
+
+    return NextResponse.next();
+}
+
+export const config = {
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+};
