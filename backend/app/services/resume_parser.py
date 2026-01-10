@@ -58,67 +58,102 @@ def parse_resume_text(text: str) -> dict:
         # Name Extraction (Simple Heuristic: First PERSON entity)
         for ent in doc.ents:
             if ent.label_ == "PERSON" and not data["name"]:
-                data["name"] = ent.text
+                # Filter out single words or very long generic text
+                if " " in ent.text and len(ent.text) < 30:
+                     data["name"] = ent.text
             
             # Location Extraction (First GPE entity)
             if ent.label_ == "GPE" and not data["location"]:
                 data["location"] = ent.text
-        
-        # Fallback for name: First line if short
-        if not data["name"]:
-            lines = text.split('\n')
-            if lines and len(lines[0]) < 50:
-                data["name"] = lines[0].strip()
+    
+    # Fallbacks if NLP failed or missed
+    if not data["name"]:
+        # Heuristic: First capitalized line that isn't a header
+        lines = [l.strip() for l in text.split('\n') if l.strip()]
+        for line in lines[:10]: # Check first 10 lines
+            if len(line.split()) < 4 and line.istitle() and "@" not in line and "curriculum" not in line.lower():
+                 data["name"] = line
+                 break
+                 
+    if not data["location"]:
+        # Heuristic: Regex for City, State/Country pattern 
+        # e.g. "New York, NY" or "London, UK"
+        loc_pattern = r'\b[A-Z][a-z]+(?: [A-Z][a-z]+)*,\s*[A-Z]{2,}\b'
+        loc_match = re.search(loc_pattern, text)
+        if loc_match:
+            data["location"] = loc_match.group(0)
 
-        # Skills Extraction (Keyword matching against a predefined list)
-        # In a real app, use a larger database or trained NER model
-        common_skills = [
-            "python", "java", "javascript", "react", "node.js", "fastapi", "sql", "nosql",
-            "docker", "kubernetes", "aws", "azure", "git", "machine learning", "ai",
-            "html", "css", "typescript", "c++", "c#", "go", "rust"
-        ]
+    # Expanded Skills Extraction
+    common_skills = [
+        # Languages
+        "python", "java", "javascript", "typescript", "c++", "c#", "go", "rust", "php", "ruby", "swift", "kotlin", "scala", "r", "matlab",
+        # Web
+        "html", "css", "react", "angular", "vue", "next.js", "node.js", "django", "flask", "fastapi", "spring boot", "asp.net", "laravel",
+        # Data & AI
+        "sql", "nosql", "postgresql", "mysql", "mongodb", "redis", "elasticsearch", "machine learning", "deep learning", "nlp", "tensorflow", "pytorch", "pandas", "numpy", "scikit-learn", "keras", "openai", "llm",
+        # DevOps & Cloud
+        "docker", "kubernetes", "aws", "azure", "gcp", "google cloud", "jenkins", "gitlab ci", "github actions", "terraform", "ansible", "linux", "bash",
+        # Tools
+        "git", "jira", "confluence", "slack", "figma", "postman"
+    ]
+    
+    text_lower = text.lower()
+    found_skills = set()
+    
+    for skill in common_skills:
+        # Use regex with word boundaries to avoid partial matches
+        pattern = r'\b' + re.escape(skill) + r'\b'
         
-        text_lower = text.lower()
-        for skill in common_skills:
-            # Use regex with word boundaries to avoid partial matches (e.g. "java" in "javascript")
-            pattern = r'\b' + re.escape(skill) + r'\b'
+        # Special handling
+        if skill == "c++":
+             pattern = r'\bc\+\+\b' # Escape plus
+        elif skill == "c#":
+             pattern = r'\bc#\b'
+        elif skill == "node.js":
+             pattern = r'\bnode(\.js)?\b'
+        elif skill == "java":
+             pattern = r'\bjava\b(?!\s*-?script)'
+        
+        if re.search(pattern, text_lower):
+            found_skills.add(skill.title())
             
-            # Special handling for Java to avoid matching "Java Script" or "Java-Script"
-            if skill == "java":
-                pattern = r'\bjava\b(?!\s*-?script)'
-            
-            if re.search(pattern, text_lower):
-                data["skills"].append(skill.title())
+    data["skills"] = list(found_skills)
 
-    # Simple keyword-based section extraction (Experience, Education)
-    # This is rudimentary. A real parser would use layout analysis or ML.
+    # Section Extraction (Simple)
     lines = text.split('\n')
     current_section = None
     
     for line in lines:
-        line_lower = line.lower().strip()
-        if "experience" in line_lower or "work history" in line_lower:
-            current_section = "experience"
-            continue
-        elif "education" in line_lower:
-            current_section = "education"
-            continue
-        elif "skills" in line_lower:
-            current_section = "skills_section" # Already handled by keywords, but could extract more
-            continue
-        elif "certifications" in line_lower:
-            current_section = "certifications"
+        line_clean = line.strip()
+        line_lower = line_clean.lower()
+        
+        if not line_clean:
             continue
             
-        if current_section == "experience" and line.strip():
-            data["experience"].append(line.strip())
-        elif current_section == "education" and line.strip():
-            data["education"].append(line.strip())
-        elif current_section == "certifications" and line.strip():
-            data["certifications"].append(line.strip())
+        # Detect headers
+        if any(keyword in line_lower for keyword in ["experience", "employment", "work history"]):
+             if len(line_clean) < 30: # Ensure it's likely a header
+                current_section = "experience"
+                continue
+        elif any(keyword in line_lower for keyword in ["education", "academic"]):
+             if len(line_clean) < 30:
+                current_section = "education"
+                continue
+        elif "certifications" in line_lower:
+             if len(line_clean) < 30:
+                current_section = "certifications"
+                continue
+            
+        if current_section == "experience":
+            data["experience"].append(line_clean)
+        elif current_section == "education":
+            data["education"].append(line_clean)
+        elif current_section == "certifications":
+            data["certifications"].append(line_clean)
 
-    # Clean up lists (limit items for preview)
-    data["experience"] = data["experience"][:5] # First 5 lines of experience
-    data["education"] = data["education"][:3]   # First 3 lines of education
+    # Clean up lists (limit items for preview, but maybe keep more if needed for analysis)
+    # Storing more experience text helps the refined recommendation engine!
+    data["experience"] = data["experience"][:20] 
+    data["education"] = data["education"][:10]   
 
     return data

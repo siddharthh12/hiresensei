@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from app.database import database
 from app.models.user import User
 from app.core.security import get_current_user
-from app.models.job_tracking import JobTrackingCreate, JobTrackingResponse
+from app.models.job_tracking import JobTrackingCreate
 from datetime import datetime
 from typing import List
 
@@ -53,30 +53,40 @@ async def mark_not_interested(
     await upsert_job_status(current_user["id"], data.job_id, "not_interested", data.job_data)
     return {"message": "Job marked as not interested"}
 
-@router.get("/list", response_model=JobTrackingResponse)
-async def list_tracked_jobs(current_user: User = Depends(get_current_user)):
+@router.get("/list")
+async def list_tracked_jobs(
+    status: str = "saved",
+    page: int = 1,
+    limit: int = 10,
+    current_user: User = Depends(get_current_user)
+):
     collection = database.get_collection("job_tracking")
-    cursor = collection.find({"user_id": current_user["id"]}).sort("updated_at", -1)
+    skip = (page - 1) * limit
     
-    jobs = await cursor.to_list(length=1000)
+    query = {"user_id": current_user["id"]}
+    if status:
+        query["status"] = status
+        
+    total_count = await collection.count_documents(query)
+    cursor = collection.find(query).sort("updated_at", -1).skip(skip).limit(limit)
     
-    response = {
-        "saved": [],
-        "applied": [],
-        "not_interested": []
-    }
+    jobs = await cursor.to_list(length=limit)
     
+    data = [] 
     for job in jobs:
-        # Map _id to id for the frontend if needed, but here we just return the job_data + tracking info
         job_info = job["job_data"]
         job_info["tracking_id"] = str(job["_id"])
         job_info["status"] = job["status"]
         job_info["updated_at"] = job["updated_at"]
-        
-        if job["status"] in response:
-            response[job["status"]].append(job_info)
+        data.append(job_info)
             
-    return response
+    return {
+        "data": data,
+        "total": total_count,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total_count + limit - 1) // limit
+    }
 
 @router.get("/status/{job_id}")
 async def get_job_status(job_id: str, current_user: User = Depends(get_current_user)):

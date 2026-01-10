@@ -9,7 +9,7 @@ class JobSchema(BaseModel):
     location: str = Field(...)
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "title": "Software Engineer",
                 "description": "Develop amazing applications",
@@ -32,7 +32,7 @@ class CachedJob(BaseModel):
     fetched_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UpdateJobModel(BaseModel):
     title: Optional[str] = None
@@ -41,7 +41,7 @@ class UpdateJobModel(BaseModel):
     location: Optional[str] = None
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "title": "Senior Software Engineer",
                 "description": "Lead the team",

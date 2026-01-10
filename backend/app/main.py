@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import auth, resume, jobs, recommend, job_tracking, dashboard, skills
+from app.routes import auth, resume, jobs, recommend, job_tracking, dashboard, hybrid_jobs
 
 app = FastAPI()
 
@@ -8,6 +8,8 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
 ]
 
 app.add_middleware(
@@ -24,7 +26,8 @@ app.include_router(jobs.router, prefix="/job", tags=["jobs"])
 app.include_router(recommend.router, prefix="/jobs", tags=["recommendations"])
 app.include_router(job_tracking.router, prefix="/tracking", tags=["tracking"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
-app.include_router(skills.router, prefix="/skills", tags=["skills"])
+
+app.include_router(hybrid_jobs.router, prefix="/hybrid-jobs", tags=["hybrid-jobs"])
 
 @app.get("/")
 def read_root():

@@ -29,26 +29,26 @@ export default function Navbar() {
                             </span>
                         </Link>
                         <div className="hidden md:block">
-                            <div className="ml-10 flex items-baseline space-x-4">
-                                <Link href="/" className={linkClass('/')}>
-                                    Home
-                                </Link>
-                                <Link href="/dashboard" className={linkClass('/dashboard')}>
-                                    Dashboard
-                                </Link>
-                                <Link href="/jobs" className={linkClass('/jobs')}>
-                                    Jobs
-                                </Link>
-                                <Link href="/recommended-jobs" className={linkClass('/recommended-jobs')}>
-                                    Recommended
-                                </Link>
-                                <Link href="/applications" className={linkClass('/applications')}>
-                                    Applications
-                                </Link>
-                                <Link href="/skill-gap" className={linkClass('/skill-gap')}>
-                                    Skill Gap
-                                </Link>
-                            </div>
+                            {isAuthenticated && (
+                                <div className="ml-10 flex items-baseline space-x-4">
+                                    <Link href="/" className={linkClass('/')}>
+                                        Home
+                                    </Link>
+                                    <Link href="/dashboard" className={linkClass('/dashboard')}>
+                                        Dashboard
+                                    </Link>
+                                    <Link href="/jobs" className={linkClass('/jobs')}>
+                                        Jobs
+                                    </Link>
+                                    <Link href="/recommended-jobs" className={linkClass('/recommended-jobs')}>
+                                        Recommended
+                                    </Link>
+                                    <Link href="/applications" className={linkClass('/applications')}>
+                                        Applications
+                                    </Link>
+
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="hidden md:block">

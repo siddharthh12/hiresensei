@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import JobCard from "@/components/JobCard";
+import { searchRecommendedJobs } from "@/lib/hybridJobsApi";
 
 export default function RecommendedJobsPage() {
     const [jobs, setJobs] = useState<any[]>([]);
+    const [externalLinks, setExternalLinks] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [sortBy, setSortBy] = useState("match");
@@ -22,6 +23,8 @@ export default function RecommendedJobsPage() {
         setLoading(true);
         setError("");
         setPage(newPage);
+        setPage(newPage);
+        window.scrollTo({ top: 0, behavior: "smooth" });
         try {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -29,14 +32,11 @@ export default function RecommendedJobsPage() {
                 return;
             }
 
-            const res = await axios.get(`http://localhost:8000/jobs/recommend?sort=${sortBy}&page=${newPage}&limit=10`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const res = await searchRecommendedJobs(token, newPage, 10);
 
-            setJobs(res.data.jobs);
-            setTotalPages(res.data.total_pages || 1);
+            setJobs(res.jobs);
+            setExternalLinks(res.external_search_links);
+            setTotalPages(Math.ceil(res.total / 10) || 1);
         } catch (err: any) {
             console.error(err);
             if (err.response?.status === 401) {
@@ -68,6 +68,24 @@ export default function RecommendedJobsPage() {
                         </select>
                     </div>
                 </div>
+
+                {/* External Search Links */}
+                {externalLinks && (
+                    <div className="mb-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Search Externally</h3>
+                        <div className="flex flex-wrap gap-4">
+                            <a href={externalLinks.linkedin} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#0077b5] text-white rounded-md hover:opacity-90 transition-opacity flex items-center gap-2">
+                                <span>LinkedIn Jobs</span>
+                            </a>
+                            <a href={externalLinks.indeed} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#2164f3] text-white rounded-md hover:opacity-90 transition-opacity flex items-center gap-2">
+                                <span>Indeed Jobs</span>
+                            </a>
+                            <a href={externalLinks.google_jobs} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center gap-2">
+                                <span>Google Jobs</span>
+                            </a>
+                        </div>
+                    </div>
+                )}
 
                 {loading && (
                     <div className="space-y-4">

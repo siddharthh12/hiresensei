@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 import JobCard from "@/components/JobCard";
+import { searchHybridJobs } from "@/lib/hybridJobsApi";
 
 export default function JobsPage() {
     const [query, setQuery] = useState("");
     const [location, setLocation] = useState("");
     const [remote, setRemote] = useState(false);
     const [jobs, setJobs] = useState<any[]>([]);
+    const [externalLinks, setExternalLinks] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [searched, setSearched] = useState(false);
@@ -20,30 +21,20 @@ export default function JobsPage() {
         if (!query) return;
 
         setPage(newPage);
+        window.scrollTo({ top: 0, behavior: "smooth" });
 
         setLoading(true);
         setError("");
         setSearched(true);
         setJobs([]);
+        setExternalLinks(null);
 
         try {
-            const res = await axios.get("http://localhost:8000/job/search", {
-                params: {
-                    query,
-                    location,
-                    remote,
-                    page: newPage,
-                    limit: 10,
-                },
-            });
+            const res = await searchHybridJobs(query, location, remote, newPage, 10);
 
-            if (res.data.data) {
-                setJobs(res.data.data);
-                setTotalPages(res.data.meta?.total_pages || 1);
-            } else {
-                setJobs([]);
-                setTotalPages(1);
-            }
+            setJobs(res.jobs);
+            setExternalLinks(res.external_search_links);
+            setTotalPages(Math.ceil(res.total / 10) || 1);
         } catch (err: any) {
             console.error(err);
             setError("Failed to fetch jobs. Please try again.");
@@ -101,6 +92,24 @@ export default function JobsPage() {
                         </button>
                     </form>
                 </div>
+
+                {/* External Search Links */}
+                {externalLinks && (
+                    <div className="mb-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Search Externally</h3>
+                        <div className="flex flex-wrap gap-4">
+                            <a href={externalLinks.linkedin} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#0077b5] text-white rounded-md hover:opacity-90 transition-opacity flex items-center gap-2">
+                                <span>LinkedIn Jobs</span>
+                            </a>
+                            <a href={externalLinks.indeed} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#2164f3] text-white rounded-md hover:opacity-90 transition-opacity flex items-center gap-2">
+                                <span>Indeed Jobs</span>
+                            </a>
+                            <a href={externalLinks.google_jobs} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center gap-2">
+                                <span>Google Jobs</span>
+                            </a>
+                        </div>
+                    </div>
+                )}
 
                 {/* Results */}
                 {error && <div className="p-4 mb-6 bg-red-100 text-red-700 rounded-md">{error}</div>}

@@ -16,3 +16,4 @@ pydantic-settings
 fuzzywuzzy
 python-Levenshtein
 openai
+beautifulsoup4

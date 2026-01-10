@@ -98,6 +98,20 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                                 📅 {new Date(job.posted_date).toLocaleDateString()}
                             </span>
                         )}
+                        {/* Source Badge */}
+                        {job.source && (
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.source === 'api' ? 'bg-blue-100 text-blue-800' :
+                                    job.source === 'remoteok' ? 'bg-green-100 text-green-800' :
+                                        job.source === 'wwr' ? 'bg-orange-100 text-orange-800' :
+                                            job.source === 'hn' ? 'bg-gray-100 text-gray-800' :
+                                                'bg-gray-100 text-gray-800'
+                                }`}>
+                                🏷️ {job.source === 'api' ? 'JSearch' :
+                                    job.source === 'wwr' ? 'WeWorkRemotely' :
+                                        job.source === 'hn' ? 'HackerNews' :
+                                            job.source === 'remoteok' ? 'RemoteOK' : job.source}
+                            </span>
+                        )}
                     </div>
                     <p className="text-gray-600 line-clamp-3 mb-4">{job.description}</p>
 
