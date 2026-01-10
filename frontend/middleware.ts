@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+    // DEBUG: Temporarily disabling auth logic to identify 500 error source
+    /*
     const token = request.cookies.get('token')?.value;
     const { pathname } = request.nextUrl;
 
@@ -30,7 +32,9 @@ export function middleware(request: NextRequest) {
         url.pathname = '/dashboard';
         return NextResponse.redirect(url);
     }
+    */
 
+    // Explicitly return next() for now
     return NextResponse.next();
 }
 
