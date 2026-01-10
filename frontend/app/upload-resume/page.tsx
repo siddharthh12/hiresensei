@@ -47,7 +47,7 @@ export default function UploadResumePage() {
             formData.append("file", file);
 
             // 1. Upload
-            const uploadRes = await axios.post("http://localhost:8000/resume/upload", formData, {
+            const uploadRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/resume/upload`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ export default function UploadResumePage() {
             setParsing(true);
 
             const parseRes = await axios.post(
-                `http://localhost:8000/resume/parse?file_path=${encodeURIComponent(file_path)}`,
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/resume/parse?file_path=${encodeURIComponent(file_path)}`,
                 {},
                 {
                     headers: {
@@ -85,7 +85,7 @@ export default function UploadResumePage() {
 
         try {
             const token = localStorage.getItem("token");
-            await axios.post("http://localhost:8000/resume/save", parsedData, {
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/resume/save`, parsedData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
