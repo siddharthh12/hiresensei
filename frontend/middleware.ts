@@ -19,17 +19,16 @@ export function middleware(request: NextRequest) {
 
     // Redirect to login if accessing protected route without token
     if (!isPublicRoute && !token) {
-        const loginUrl = new URL('/login', request.url);
-        return NextResponse.redirect(loginUrl);
+        const url = request.nextUrl.clone();
+        url.pathname = '/login';
+        return NextResponse.redirect(url);
     }
 
     // Redirect to dashboard if accessing public route (like login) WITH token
     if (isPublicRoute && token && pathname !== '/') {
-        // Allow '/' to be visited even if logged in, or redirect? 
-        // User requirement: "After login → redirect to /dashboard"
-        // Usually if I'm logged in and go to /login, I should be sent to dashboard.
-        const dashboardUrl = new URL('/dashboard', request.url);
-        return NextResponse.redirect(dashboardUrl);
+        const url = request.nextUrl.clone();
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
     }
 
     return NextResponse.next();
