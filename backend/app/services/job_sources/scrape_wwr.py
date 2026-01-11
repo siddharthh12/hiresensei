@@ -70,6 +70,9 @@ async def scrape_wwr(query: str) -> List[HybridJob]:
                             
                     job_id = f"wwr-{apply_link.split('/')[-1]}" if apply_link else f"wwr-{hash(full_title)}"
                     
+                    if query and query.lower() not in title.lower() and query.lower() not in description.lower():
+                        continue
+
                     job = normalize_job_data(
                         job_id=job_id,
                         title=title,

@@ -8,12 +8,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoggingIn(true);
 
     try {
       const formData = new URLSearchParams();
@@ -37,6 +39,7 @@ export default function LoginPage() {
       login(data.access_token);
     } catch (err: any) {
       setError(err.message);
+      setLoggingIn(false);
     }
   };
 
@@ -68,9 +71,10 @@ export default function LoginPage() {
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-primary-600 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            disabled={loggingIn}
+            className={`w-full px-4 py-2 text-white bg-primary-600 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 ${loggingIn ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            Login
+            {loggingIn ? 'Logging in...' : 'Login'}
           </button>
         </form>
         <p className="text-center text-sm text-gray-600">
