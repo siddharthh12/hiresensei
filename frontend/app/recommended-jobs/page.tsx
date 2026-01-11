@@ -50,17 +50,17 @@ export default function RecommendedJobsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 p-8">
+        <div className="min-h-screen bg-gray-100 p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <h1 className="text-3xl font-bold text-gray-900">Recommended for You</h1>
 
-                    <div className="flex items-center space-x-2">
-                        <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                    <div className="w-full md:w-auto flex items-center space-x-2">
+                        <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Sort by:</label>
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="px-3 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            className="w-full md:w-auto px-3 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                         >
                             <option value="match">Best Match</option>
                             <option value="latest">Latest</option>
