@@ -9,13 +9,17 @@ interface JobCardProps {
 // Helper to strip HTML tags
 const stripHtml = (html: string) => {
     if (!html) return "";
-    return html.replace(/<[^>]*>?/gm, '');
+    // Basic entity decoding to ensure tags are recognized
+    const decoded = html
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/&nbsp;/g, ' ');
+    // Strip tags
+    return decoded.replace(/<\/?[^>]+(>|$)/g, "");
 };
 
 export default function JobCard({ job, onStatusChange }: JobCardProps) {
-    // ... existing code ...
-    // ... in the return statement ...
-    <p className="text-xs sm:text-base text-gray-600 line-clamp-3 mb-3">{stripHtml(job.description)}</p>
     const [status, setStatus] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -75,7 +79,7 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
     }
 
     return (
-        <div className={`bg-white p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 relative ${status === 'saved' ? 'border-l-4 border-l-yellow-400' : status === 'applied' ? 'border-l-4 border-l-green-500' : ''}`}>
+        <div className={`w-full max-w-full bg-white p-4 sm:p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow border border-gray-200 relative ${status === 'saved' ? 'border-l-4 border-l-yellow-400' : status === 'applied' ? 'border-l-4 border-l-green-500' : ''}`}>
             <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -91,7 +95,7 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                         {status === "saved" && <span className="text-yellow-500 text-sm sm:text-lg">⭐</span>}
                         {status === "applied" && <span className="text-green-500 text-sm sm:text-lg">✅</span>}
                     </div>
-                    <p className="text-sm sm:text-lg text-gray-700 font-medium mb-2 truncate">{job.company}</p>
+                    <p className="text-sm sm:text-lg text-gray-700 font-medium mb-2 break-words">{job.company}</p>
 
                     <div className="flex flex-wrap gap-1.5 text-[10px] sm:text-sm text-gray-600 mb-3">
                         <span className="bg-gray-100 px-2 py-0.5 rounded-full flex items-center">
@@ -122,7 +126,7 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                             </span>
                         )}
                     </div>
-                    <p className="text-xs sm:text-base text-gray-600 line-clamp-3 mb-3">{stripHtml(job.description)}</p>
+                    <p className="text-xs sm:text-base text-gray-600 line-clamp-3 mb-3 break-words">{stripHtml(job.description)}</p>
 
                     {/* Explanation Panel (if available) */}
                     {job.reason && (

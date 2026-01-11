@@ -70,7 +70,7 @@ export default function Home() {
       </main>
 
       <footer className="flex items-center justify-center w-full h-24 border-t border-gray-800 text-gray-500">
-        Powered by Next.js & FastAPI
+        Developed By SIDDHARTH 😎
       </footer>
     </div>
   );
