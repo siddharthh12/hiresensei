@@ -66,41 +66,41 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
     }
 
     return (
-        <div className={`bg-white p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 relative ${status === 'saved' ? 'border-l-4 border-l-yellow-400' : status === 'applied' ? 'border-l-4 border-l-green-500' : ''}`}>
+        <div className={`bg-white p-3 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 relative ${status === 'saved' ? 'border-l-4 border-l-yellow-400' : status === 'applied' ? 'border-l-4 border-l-green-500' : ''}`}>
             <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
-                        <h2 className="text-lg sm:text-xl font-bold text-gray-900 break-words">{job.title}</h2>
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h2 className="text-base sm:text-xl font-bold text-gray-900 break-words leading-tight">{job.title}</h2>
                         {job.match_score && (
-                            <span className={`px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${job.match_score >= 80 ? 'bg-green-100 text-green-800' :
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-semibold whitespace-nowrap ${job.match_score >= 80 ? 'bg-green-100 text-green-800' :
                                 job.match_score >= 50 ? 'bg-yellow-100 text-yellow-800' :
                                     'bg-gray-100 text-gray-800'
                                 }`}>
                                 {job.match_score}% Match
                             </span>
                         )}
-                        {status === "saved" && <span className="text-yellow-500 text-base sm:text-lg">⭐</span>}
-                        {status === "applied" && <span className="text-green-500 text-base sm:text-lg">✅</span>}
+                        {status === "saved" && <span className="text-yellow-500 text-sm sm:text-lg">⭐</span>}
+                        {status === "applied" && <span className="text-green-500 text-sm sm:text-lg">✅</span>}
                     </div>
-                    <p className="text-base sm:text-lg text-gray-700 font-medium mb-2">{job.company}</p>
+                    <p className="text-sm sm:text-lg text-gray-700 font-medium mb-2 truncate">{job.company}</p>
 
-                    <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-gray-600 mb-4">
-                        <span className="bg-gray-100 px-2 sm:px-3 py-1 rounded-full flex items-center">
+                    <div className="flex flex-wrap gap-1.5 text-[10px] sm:text-sm text-gray-600 mb-3">
+                        <span className="bg-gray-100 px-2 py-0.5 rounded-full flex items-center">
                             📍 {job.location || "Remote"}
                         </span>
                         {job.job_type && (
-                            <span className="bg-primary-50 text-primary-700 px-2 sm:px-3 py-1 rounded-full">
+                            <span className="bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">
                                 💼 {job.job_type}
                             </span>
                         )}
                         {job.posted_date && (
-                            <span className="bg-green-50 text-green-700 px-2 sm:px-3 py-1 rounded-full">
+                            <span className="bg-green-50 text-green-700 px-2 py-0.5 rounded-full">
                                 📅 {new Date(job.posted_date).toLocaleDateString()}
                             </span>
                         )}
                         {/* Source Badge */}
                         {job.source && (
-                            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${job.source === 'api' ? 'bg-blue-100 text-blue-800' :
+                            <span className={`px-2 py-0.5 rounded-full font-semibold ${job.source === 'api' ? 'bg-blue-100 text-blue-800' :
                                 job.source === 'remoteok' ? 'bg-green-100 text-green-800' :
                                     job.source === 'wwr' ? 'bg-orange-100 text-orange-800' :
                                         job.source === 'hn' ? 'bg-gray-100 text-gray-800' :
@@ -113,7 +113,7 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                             </span>
                         )}
                     </div>
-                    <p className="text-sm sm:text-base text-gray-600 line-clamp-3 mb-4">{job.description}</p>
+                    <p className="text-xs sm:text-base text-gray-600 line-clamp-3 mb-3">{job.description}</p>
 
                     {/* Explanation Panel (if available) */}
                     {job.reason && (
