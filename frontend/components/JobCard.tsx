@@ -69,8 +69,8 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
         <div className={`bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 relative ${status === 'saved' ? 'border-l-4 border-l-yellow-400' : status === 'applied' ? 'border-l-4 border-l-green-500' : ''}`}>
             <div className="flex justify-between items-start">
                 <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                        <h2 className="text-xl font-bold text-gray-900">{job.title}</h2>
+                    <div className="flex flex-wrap items-center gap-3 mb-1">
+                        <h2 className="text-xl font-bold text-gray-900 break-words">{job.title}</h2>
                         {job.match_score && (
                             <span className={`px-2 py-0.5 rounded text-xs font-semibold ${job.match_score >= 80 ? 'bg-green-100 text-green-800' :
                                 job.match_score >= 50 ? 'bg-yellow-100 text-yellow-800' :
@@ -101,10 +101,10 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                         {/* Source Badge */}
                         {job.source && (
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${job.source === 'api' ? 'bg-blue-100 text-blue-800' :
-                                    job.source === 'remoteok' ? 'bg-green-100 text-green-800' :
-                                        job.source === 'wwr' ? 'bg-orange-100 text-orange-800' :
-                                            job.source === 'hn' ? 'bg-gray-100 text-gray-800' :
-                                                'bg-gray-100 text-gray-800'
+                                job.source === 'remoteok' ? 'bg-green-100 text-green-800' :
+                                    job.source === 'wwr' ? 'bg-orange-100 text-orange-800' :
+                                        job.source === 'hn' ? 'bg-gray-100 text-gray-800' :
+                                            'bg-gray-100 text-gray-800'
                                 }`}>
                                 🏷️ {job.source === 'api' ? 'JSearch' :
                                     job.source === 'wwr' ? 'WeWorkRemotely' :
@@ -137,28 +137,30 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-gray-100">
-                <button
-                    onClick={() => handleAction("save")}
-                    disabled={loading || status === "saved"}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${status === "saved"
-                        ? "bg-yellow-100 text-yellow-700 cursor-default"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                        }`}
-                >
-                    {status === "saved" ? "Saved" : "Save"}
-                </button>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 mt-4 pt-4 border-t border-gray-100">
+                <div className="flex gap-3 w-full sm:w-auto">
+                    <button
+                        onClick={() => handleAction("save")}
+                        disabled={loading || status === "saved"}
+                        className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${status === "saved"
+                            ? "bg-yellow-100 text-yellow-700 cursor-default"
+                            : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                            }`}
+                    >
+                        {status === "saved" ? "Saved" : "Save"}
+                    </button>
 
-                <button
-                    onClick={() => handleAction("apply")}
-                    disabled={loading}
-                    className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-primary-600 text-white hover:bg-primary-700"
-                >
-                    Apply Now
-                </button>
+                    <button
+                        onClick={() => handleAction("apply")}
+                        disabled={loading}
+                        className="flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors bg-primary-600 text-white hover:bg-primary-700"
+                    >
+                        Apply Now
+                    </button>
+                </div>
 
                 {status === "applied" && (
-                    <span className="px-3 py-2 text-green-600 font-medium text-sm flex items-center">
+                    <span className="px-3 py-2 text-green-600 font-medium text-sm flex items-center justify-center sm:justify-start">
                         ✅ Applied
                     </span>
                 )}
@@ -166,7 +168,7 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                 <button
                     onClick={() => handleAction("not_interested")}
                     disabled={loading || status === "not_interested"}
-                    className="px-4 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors ml-auto"
+                    className="w-full sm:w-auto px-4 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors sm:ml-auto text-center"
                 >
                     Not Interested
                 </button>
