@@ -6,7 +6,16 @@ interface JobCardProps {
     onStatusChange?: () => void;
 }
 
+// Helper to strip HTML tags
+const stripHtml = (html: string) => {
+    if (!html) return "";
+    return html.replace(/<[^>]*>?/gm, '');
+};
+
 export default function JobCard({ job, onStatusChange }: JobCardProps) {
+    // ... existing code ...
+    // ... in the return statement ...
+    <p className="text-xs sm:text-base text-gray-600 line-clamp-3 mb-3">{stripHtml(job.description)}</p>
     const [status, setStatus] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -66,7 +75,7 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
     }
 
     return (
-        <div className={`bg-white p-3 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 relative ${status === 'saved' ? 'border-l-4 border-l-yellow-400' : status === 'applied' ? 'border-l-4 border-l-green-500' : ''}`}>
+        <div className={`bg-white p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 relative ${status === 'saved' ? 'border-l-4 border-l-yellow-400' : status === 'applied' ? 'border-l-4 border-l-green-500' : ''}`}>
             <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -113,7 +122,7 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                             </span>
                         )}
                     </div>
-                    <p className="text-xs sm:text-base text-gray-600 line-clamp-3 mb-3">{job.description}</p>
+                    <p className="text-xs sm:text-base text-gray-600 line-clamp-3 mb-3">{stripHtml(job.description)}</p>
 
                     {/* Explanation Panel (if available) */}
                     {job.reason && (
@@ -137,11 +146,11 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-100">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-4 pt-4 border-t border-gray-100">
                 <button
                     onClick={() => handleAction("save")}
                     disabled={loading || status === "saved"}
-                    className={`col-span-1 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${status === "saved"
+                    className={`col-span-1 px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors flex items-center justify-center ${status === "saved"
                         ? "bg-yellow-100 text-yellow-700 cursor-default"
                         : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                         }`}
@@ -152,14 +161,14 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                 <button
                     onClick={() => handleAction("apply")}
                     disabled={loading}
-                    className="col-span-1 px-3 py-2 rounded-md text-sm font-medium transition-colors bg-primary-600 text-white hover:bg-primary-700 flex items-center justify-center"
+                    className="col-span-1 px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors bg-primary-600 text-white hover:bg-primary-700 flex items-center justify-center"
                 >
                     Apply Now
                 </button>
 
                 {status === "applied" && (
                     <div className="col-span-2 flex justify-center">
-                        <span className="px-2 text-green-600 font-medium text-sm flex items-center">
+                        <span className="px-2 text-green-600 font-medium text-xs sm:text-sm flex items-center">
                             ✅ Applied
                         </span>
                     </div>
@@ -168,7 +177,7 @@ export default function JobCard({ job, onStatusChange }: JobCardProps) {
                 <button
                     onClick={() => handleAction("not_interested")}
                     disabled={loading || status === "not_interested"}
-                    className="col-span-2 px-3 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors text-center"
+                    className="col-span-2 px-3 py-2 rounded-md text-[10px] sm:text-sm font-medium text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors text-center"
                 >
                     Not Interested
                 </button>

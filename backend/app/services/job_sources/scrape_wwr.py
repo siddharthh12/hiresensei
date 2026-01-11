@@ -1,3 +1,4 @@
+import re
 import httpx
 import xml.etree.ElementTree as ET
 from typing import List
@@ -47,7 +48,9 @@ async def scrape_wwr(query: str) -> List[HybridJob]:
                         
                     full_title = title_elem.text
                     apply_link = link_elem.text
-                    description = desc_elem.text if desc_elem is not None else ""
+                    raw_description = desc_elem.text if desc_elem is not None else ""
+                    # Clean description HTML using regex
+                    description = re.sub(r'<[^>]+>', '', raw_description).strip()
                     
                     # Title usually "Company: Role" or "Role: Company" or just "Role"
                     # WWR RSS title format: "Role: Company"
